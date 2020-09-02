@@ -1,9 +1,24 @@
+/*eslint-disable */
 import './index.scss';
 
-async function log() {
-  const resp = await fetch('https://jsonplaceholder.typicode.com/todos/1');
-  console.log(resp);
-  return resp;
-}
+const input = document.getElementById('input_item');
 
-log();
+const addBtn = document.getElementById('add');
+const deleteAllBtn = document.getElementById('delete_all');
+
+const list = document.getElementById('list');
+
+addBtn.addEventListener('click', (element) => {
+    const value = input.value;
+    const li = document.createElement('li');
+    const button = document.createElement('button');
+    button.addEventListener('click', _ => li.remove());
+    li.insertAdjacentText('beforeend', value);
+    li.insertAdjacentElement('beforeend', button);
+    button.insertAdjacentText('beforeend', 'Delete');
+    list.insertAdjacentElement('beforeend', li);
+});
+
+deleteAllBtn.addEventListener('click', _ => {
+    list.innerHTML = '';
+});
