@@ -1,24 +1,41 @@
 /*eslint-disable */
-import './index.scss';
 
-const input = document.getElementById('input_item');
+class Robot {
+    constructor(name = 'Android Valera', weight = 1, coords = {x: 0, y: 0},
+                chipVersion = 1) {
+        this.name = name;
+        this.weight = weight;
+        this.coords = coords;
+        this.chipVersion = chipVersion;
+    }
 
-const addBtn = document.getElementById('add');
-const deleteAllBtn = document.getElementById('delete_all');
+    goForward(step) {
+        this.coords.y += step || 1;
+    }
+    goBack(step) {
+        this.coords.y -= step || 1;
+    }
+    goRight(step) {
+        this.coords.x -= step || 1;
+    }
+    goLeft(step) {
+        this.coords.x += step || 1;
+    }
+    getInfo() {
+        return `Robot: ${this.name} \nChip version: ${this.chipVersion} \nWeight: ${this.weight}`;
+    }
+}
 
-const list = document.getElementById('list');
+class FlyingRobot extends Robot {
+    constructor(name, weight, coords = {x: 0, y: 0, z: 0}, chipVersion) {
+        super(name, weight, null, chipVersion);
+        this.coords = coords;
+    }
 
-addBtn.addEventListener('click', (element) => {
-    const value = input.value;
-    const li = document.createElement('li');
-    const button = document.createElement('button');
-    button.addEventListener('click', _ => li.remove());
-    li.insertAdjacentText('beforeend', value);
-    li.insertAdjacentElement('beforeend', button);
-    button.insertAdjacentText('beforeend', 'Delete');
-    list.insertAdjacentElement('beforeend', li);
-});
-
-deleteAllBtn.addEventListener('click', _ => {
-    list.innerHTML = '';
-});
+    goUp(step) {
+        this.coords.z += step || 1;
+    }
+    goDown(step) {
+        this.coords.z -= step || 1;
+    }
+}
