@@ -7,16 +7,32 @@
 </head>
 <body>
   <main>
-    <div class="app">
-      <label for="input_item">
-        <input type="text" id="input_item">
-      </label>
-      <button type="button" id="add">Add</button>
-      <button type="button" id="delete_all">Delete All</button>
+    <div class="container">
+      <div class="app">
+        <label for="input_item">
+          <input type="text" id="input_item" maxlength="50">
+        </label>
+        <button class="btn purple" type="button" id="add">Add</button>
+        <button class="btn red" type="button" id="delete_all">Delete All</button>
+      </div>
+      <div class="choose">
+        <button class="btn purple">All</button>
+        <button class="btn purple">Completed</button>
+        <button class="btn purple">Uncompleted</button>
+      </div>
+      <ul id="list">
+        <!--<li class="item">
+          <div class="item_text inner_item">To do item</div>
+          <div class="item_btn inner_item">
+            <button class="btn purple">Edit</button>
+            <button class="btn red">Delete</button>
+          </div>
+        </li>-->
+      </ul>
+      <div class="footer">
+        <button class="btn green">Clear completed</button>
+      </div>
     </div>
-    <ul id="list">
-
-    </ul>
   </main>
 </body>
 </html>
