@@ -1,6 +1,6 @@
 /*eslint-disable */
 
-class Button {
+class Li {
     constructor(classList) {
         this.element = document.createElement('li');
         this.element.className += classList;
@@ -17,4 +17,4 @@ class Button {
     }
 }
 
-export default Button;
+export default Li;

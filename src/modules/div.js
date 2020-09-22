@@ -1,10 +1,9 @@
 /*eslint-disable */
 
 class Div {
-    constructor(classList) {
+    constructor(...classList) {
         this.element = document.createElement('div');
-        this.element.className += classList;
-        this.isChecked = false;
+        this.element.className += classList.join((' '));
     }
 
     getDiv() {
@@ -23,14 +22,6 @@ class Div {
 
     addClickListener(func) {
         this.element.addEventListener('click', func);
-    }
-
-    setCheck() {
-        this.isChecked = !this.isChecked;
-    }
-
-    getCheck() {
-        return this.isChecked;
     }
 }
 
