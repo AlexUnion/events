@@ -1,9 +1,5 @@
 /*eslint-disable */
 
-import Div from "./div";
-import LiElement from "./item";
-import Button from "./button";
-
 import uniqId from 'uniqid';
 
 class TodoElement {

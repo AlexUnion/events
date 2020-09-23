@@ -2,9 +2,6 @@
 import './index.css';
 
 import TodoElement from "./modules/todoElement";
-import Div from "./modules/div";
-import LiElement from "./modules/item";
-import Button from "./modules/button";
 
 const input = document.getElementById('input_item');
 const addBtn = document.getElementById('add');
@@ -30,7 +27,7 @@ class TodoList {
         event.preventDefault();
 
         const text = input.value;
-        if (!text || !text.replaceAll(' ', '')) return;
+        if (!text || !text.trim()) return;
 
         input.value = '';
         this.addElement(text);
@@ -46,12 +43,10 @@ class TodoList {
     renderList() {
         this.list.innerHTML = '';
 
-        const listElements = this.todos.map((el) => {
-            return this.create(el);
-        });
+        this.todos.map((item) => {
+            const element = this.create(item);
 
-        listElements.forEach((el) => {
-            this.list.insertAdjacentElement('beforeend', el);
+            this.list.insertAdjacentElement('beforeend', element);
         });
 
     }
@@ -63,64 +58,72 @@ class TodoList {
 
     create(todoElement) {
         //Create to_do text block
-        const todoText = new Div('item_text inner_item');
-        todoText.setInnerText(todoElement.getText());
+        const todoText = document.createElement('div');
+        todoText.className += 'item_text inner_item';
+
+        todoText.innerText = todoElement.getText();
 
         //Create container for buttons
-        const btnContainer = new Div('item_btn inner_item');
+        const btnContainer = document.createElement('div');
+        btnContainer.className += 'item_btn inner_item';
 
         //Main list element (li)
-        const listItem = new LiElement('item');
+        const listItem = document.createElement('li');
+        listItem.className += 'item';
 
         //Insert to main container
-        listItem.insertElements(todoText.getDiv(), btnContainer.getDiv());
+        listItem.insertAdjacentElement('beforeend', todoText);
+        listItem.insertAdjacentElement('beforeend', btnContainer);
 
         //Create buttons
-        const btnEdit = new Button('btn purple', 'Edit');
-        const btnDelete = new Button('btn red', 'Delete');
+        const btnEdit = document.createElement('button');
+        btnEdit.className += 'btn purple';
+        btnEdit.insertAdjacentText('beforeend', 'Edit');
+
+        const btnDelete = document.createElement('button');
+        btnDelete.className += 'btn red';
+        btnDelete.insertAdjacentText('beforeend', 'Delete');
 
         //Insert buttons to btnContainer
-        btnContainer.insertElements(btnEdit.getButton(), btnDelete.getButton());
+        btnContainer.insertAdjacentElement('beforeend', btnEdit);
+        btnContainer.insertAdjacentElement('beforeend', btnDelete);
 
-        btnEdit.addClickListener(_ => {
-            todoText.getDiv().tabIndex = -1;
-            todoText.getDiv().setAttribute('contenteditable', true);
-            todoText.getDiv().focus();
-            /*
-            if (text && text.replaceAll(' ', '')) {
-                todoText.setInnerText(text);
-            }*/
+        btnEdit.addEventListener('click', _ => {
+            todoText.tabIndex = -1;
+            todoText.setAttribute('contenteditable', true);
+            todoText.focus();
+
         });
 
-        todoText.getDiv().addEventListener('keydown', (event) => {
+        todoText.addEventListener('keydown', (event) => {
             if (event.key === 'Enter') {
-                todoText.getDiv().blur();
+                todoText.blur();
             }
         });
 
-        todoText.getDiv().onblur = () => {
-            todoText.getDiv().setAttribute('contenteditable', false);
-            todoText.getDiv().removeAttribute('tabIndex');
-            todoElement.setText(todoText.getDiv().innerText);
+        todoText.onblur = () => {
+            todoText.setAttribute('contenteditable', false);
+            todoText.removeAttribute('tabIndex');
+            todoElement.setText(todoText.innerText);
             this.renderList();
         }
 
-        btnDelete.addClickListener(_ => {
+        btnDelete.addEventListener('click',_ => {
             this.deleteById(todoElement.getId());
             this.renderList();
         });
 
-        todoText.addClickListener(_ => {
+        todoText.addEventListener('click',_ => {
             const isDone = todoElement.isDone();
             if (isDone) {
-                todoText.element.style = "background-color: '#9a9a9a'";
+                todoText.style = "background-color: '#9a9a9a'";
             } else {
-                todoText.element.style = 'background-color: #2a2';
+                todoText.style = 'background-color: #2a2';
             }
             todoElement.setDone(!isDone);
-        })
+        });
 
-        return listItem.element;
+        return listItem;
     }
 
     remove() {
