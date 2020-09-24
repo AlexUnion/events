@@ -22,7 +22,7 @@ body {
   background-color: rgba(208,0,3,0.85);
 }
 .green {
-  background-color: rgba(0,114,7,0.89);
+  background-color: #2a2;
 }
 .btn:hover {
   background-color: #ddd;
@@ -56,6 +56,13 @@ input {
   display: flex;
   flex-wrap: nowrap;
   justify-content: space-between;
+  border-top: 1px solid #333;
+  padding-top: 10px;
+  padding-bottom: 5px;
+}
+.item:first-child {
+  border-top: none;
+  padding-top: 0;
 }
 .item_text {
   display: inline-block;
@@ -74,8 +81,4 @@ input {
 }
 .hidden {
   display: none;
-}
-
-.item_text:checked {
-  background-color: green;
 }

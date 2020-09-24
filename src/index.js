@@ -1,58 +1,138 @@
 /*eslint-disable */
 import './index.css';
 
-import ListItem from './modules/item';
-import Button from './modules/button';
-import Div from './modules/div';
+import TodoElement from "./modules/todoElement";
 
 const input = document.getElementById('input_item');
-
 const addBtn = document.getElementById('add');
 const deleteAllBtn = document.getElementById('delete_all');
-
 const list = document.getElementById('list');
+const form = document.getElementById('form');
 
-const todoItems = [];
+class TodoList {
 
-addBtn.addEventListener('click', (element) => {
-    const value = input.value;
+    todos = [];
 
-    if (!value || !value.replaceAll(' ', '')) return;
+    constructor(form, input, list, addBtn, deleteBtn) {
 
-    const todoText = new Div('item_text inner_item');
-    todoText.setInnerText(value);
+        this.list = list;
 
-    const listItem = new ListItem('item');
-    const divElements = new Div('item_btn inner_item');
+        addBtn.addEventListener('click', (event) => this.onSubmit(event));
+        deleteBtn.addEventListener('click', _ => this.onDeleteAll());
 
-    listItem.insertElements(todoText.getDiv(), divElements.getDiv());
+        this.renderList();
+    }
 
-    const btnEdit = new Button('btn purple', 'Edit');
-    const btnDelete = new Button('btn red', 'Delete');
+    onSubmit(event) {
+        event.preventDefault();
 
-    divElements.insertElements(btnEdit.getButton(), btnDelete.getButton());
+        const text = input.value;
+        if (!text || !text.trim()) return;
 
-    btnEdit.addClickListener(_ => {
-        const text = prompt('Edit "To do" item.');
-        if (text && text.replaceAll(' ', '')) {
-            todoText.setInnerText(text);
+        input.value = '';
+        this.addElement(text);
+
+        this.renderList(list);
+    }
+
+    onDeleteAll() {
+        this.remove();
+        list.innerHTML = '';
+    }
+
+    renderList() {
+        this.list.innerHTML = '';
+
+        this.todos.map((item) => {
+            const element = this.create(item);
+
+            this.list.insertAdjacentElement('beforeend', element);
+        });
+
+    }
+
+    addElement(text) {
+        const todoElement = new TodoElement(text);
+        this.todos.push(todoElement);
+    }
+
+    create(todoElement) {
+        //Create to_do text block
+        const todoText = document.createElement('div');
+        todoText.className += 'item_text inner_item';
+
+        todoText.innerText = todoElement.getText();
+
+        //Create container for buttons
+        const btnContainer = document.createElement('div');
+        btnContainer.className += 'item_btn inner_item';
+
+        //Main list element (li)
+        const listItem = document.createElement('li');
+        listItem.className += 'item';
+
+        //Insert to main container
+        listItem.insertAdjacentElement('beforeend', todoText);
+        listItem.insertAdjacentElement('beforeend', btnContainer);
+
+        //Create buttons
+        const btnEdit = document.createElement('button');
+        btnEdit.className += 'btn purple';
+        btnEdit.insertAdjacentText('beforeend', 'Edit');
+
+        const btnDelete = document.createElement('button');
+        btnDelete.className += 'btn red';
+        btnDelete.insertAdjacentText('beforeend', 'Delete');
+
+        //Insert buttons to btnContainer
+        btnContainer.insertAdjacentElement('beforeend', btnEdit);
+        btnContainer.insertAdjacentElement('beforeend', btnDelete);
+
+        btnEdit.addEventListener('click', _ => {
+            todoText.tabIndex = -1;
+            todoText.setAttribute('contenteditable', true);
+            todoText.focus();
+
+        });
+
+        todoText.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                todoText.blur();
+            }
+        });
+
+        todoText.onblur = () => {
+            todoText.setAttribute('contenteditable', false);
+            todoText.removeAttribute('tabIndex');
+            todoElement.setText(todoText.innerText);
+            this.renderList();
         }
-    });
 
-    btnDelete.addClickListener(_ => listItem.remove());
+        btnDelete.addEventListener('click',_ => {
+            this.deleteById(todoElement.getId());
+            this.renderList();
+        });
 
-    todoText.addClickListener(_ => {
-        if (todoText.getCheck()) {
-            todoText.element.style = "background-color: '#9a9a9a'";
-        } else {
-            todoText.element.style = 'background-color: green';
-        }
-        todoText.setCheck();
-    })
+        todoText.addEventListener('click',_ => {
+            const isDone = todoElement.isDone();
+            if (isDone) {
+                todoText.style = "background-color: '#9a9a9a'";
+            } else {
+                todoText.style = 'background-color: #2a2';
+            }
+            todoElement.setDone(!isDone);
+        });
 
-    list.insertAdjacentElement('beforeend', listItem.element);
-});
+        return listItem;
+    }
 
-deleteAllBtn.addEventListener('click', _ => {
-    list.innerHTML = '';
-});
+    remove() {
+        this.todos.length = 0;
+    }
+
+    deleteById(id) {
+        this.todos = this.todos.filter((el) => el.getId() !== id);
+    }
+}
+
+const todoList = new TodoList(form, input, list, addBtn, deleteAllBtn);
