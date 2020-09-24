@@ -4,21 +4,32 @@ import './index.css';
 import TodoElement from "./modules/todoElement";
 
 const input = document.getElementById('input_item');
-const addBtn = document.getElementById('add');
 const deleteAllBtn = document.getElementById('delete_all');
 const list = document.getElementById('list');
 const form = document.getElementById('form');
+
+const btnAll = document.getElementById('filter_all');
+const btnCompleted = document.getElementById('filter_completed');
+const btnUncompleted = document.getElementById('filter_uncompleted');
+const btnDeleteDone = document.getElementById('delete_done');
 
 class TodoList {
 
     todos = [];
 
-    constructor(form, input, list, addBtn, deleteBtn) {
+    constructor(form, input, list, deleteBtn, btnAll,
+                btnCompleted, btnUncompleted, btnDeleteDone) {
 
         this.list = list;
 
-        addBtn.addEventListener('click', (event) => this.onSubmit(event));
+        form.addEventListener('submit', (event) => this.onSubmit(event));
         deleteBtn.addEventListener('click', _ => this.onDeleteAll());
+
+        btnAll.addEventListener('click', _ => this.renderList());
+        btnCompleted.addEventListener('click', _ => this.renderFilteredList('complete'));
+        btnUncompleted.addEventListener('click', _ => this.renderFilteredList('uncomplete'));
+
+        btnDeleteDone.addEventListener('click', _ => this.deleteDone());
 
         this.renderList();
     }
@@ -32,7 +43,7 @@ class TodoList {
         input.value = '';
         this.addElement(text);
 
-        this.renderList(list);
+        this.renderList();
     }
 
     onDeleteAll() {
@@ -40,15 +51,32 @@ class TodoList {
         list.innerHTML = '';
     }
 
-    renderList() {
+    deleteDone() {
+        list.innerHTML = '';
+        this.todos = this.todos.filter((el) => !el.isDone());
+        this.renderList();
+    }
+
+    renderList(todos = this.todos) {
+
         this.list.innerHTML = '';
 
-        this.todos.map((item) => {
+        todos.map((item) => {
             const element = this.create(item);
 
             this.list.insertAdjacentElement('beforeend', element);
         });
 
+    }
+
+    renderFilteredList(filter) {
+        let filteredList = null;
+        if (filter === 'complete') {
+            filteredList = this.todos.filter(item => item.isDone());
+        } else if (filter === 'uncomplete') {
+            filteredList = this.todos.filter(item => !item.isDone());
+        }
+        this.renderList(filteredList);
     }
 
     addElement(text) {
@@ -59,17 +87,18 @@ class TodoList {
     create(todoElement) {
         //Create to_do text block
         const todoText = document.createElement('div');
-        todoText.className += 'item_text inner_item';
+        todoText.classList.add('item_text', 'inner_item');
+        todoElement.isDone() && todoText.classList.add('active');
 
         todoText.innerText = todoElement.getText();
 
         //Create container for buttons
         const btnContainer = document.createElement('div');
-        btnContainer.className += 'item_btn inner_item';
+        btnContainer.classList.add('item_btn', 'inner_item');
 
         //Main list element (li)
         const listItem = document.createElement('li');
-        listItem.className += 'item';
+        listItem.classList.add('item');
 
         //Insert to main container
         listItem.insertAdjacentElement('beforeend', todoText);
@@ -77,11 +106,11 @@ class TodoList {
 
         //Create buttons
         const btnEdit = document.createElement('button');
-        btnEdit.className += 'btn purple';
+        btnEdit.classList.add('btn', 'purple');
         btnEdit.insertAdjacentText('beforeend', 'Edit');
 
         const btnDelete = document.createElement('button');
-        btnDelete.className += 'btn red';
+        btnDelete.classList.add('btn', 'red');
         btnDelete.insertAdjacentText('beforeend', 'Delete');
 
         //Insert buttons to btnContainer
@@ -115,11 +144,9 @@ class TodoList {
 
         todoText.addEventListener('click',_ => {
             const isDone = todoElement.isDone();
-            if (isDone) {
-                todoText.style = "background-color: '#9a9a9a'";
-            } else {
-                todoText.style = 'background-color: #2a2';
-            }
+
+            todoText.classList.toggle('active');
+
             todoElement.setDone(!isDone);
         });
 
@@ -135,4 +162,5 @@ class TodoList {
     }
 }
 
-const todoList = new TodoList(form, input, list, addBtn, deleteAllBtn);
+const todoList = new TodoList(form, input, list, deleteAllBtn,
+    btnAll, btnCompleted, btnUncompleted, btnDeleteDone);
