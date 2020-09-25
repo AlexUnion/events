@@ -4,7 +4,7 @@ import uniqId from 'uniqid';
 
 class TodoElement {
 
-    #item = {
+    item = {
         isDone: false,
         text: '',
         id: uniqId(),
@@ -12,28 +12,28 @@ class TodoElement {
 
     constructor(text) {
         if (text) {
-            this.#item.text = text;
+            this.item.text = text;
         }
     }
 
     isDone() {
-        return this.#item.isDone;
+        return this.item.isDone;
     }
 
     setDone(isDone) {
-        this.#item.isDone = isDone;
+        this.item.isDone = isDone;
     }
 
     setText(text) {
-        this.#item.text = text;
+        this.item.text = text;
     }
 
     getText() {
-        return this.#item.text;
+        return this.item.text;
     }
 
     getId() {
-        return this.#item.id;
+        return this.item.id;
     }
 }
 
