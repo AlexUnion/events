@@ -3,6 +3,8 @@ import './index.css';
 
 import TodoElement from "./modules/todoElement";
 
+const STORAGE_KEY = 'todo_list';
+
 const input = document.getElementById('input_item');
 const deleteAllBtn = document.getElementById('delete_all');
 const list = document.getElementById('list');
@@ -21,6 +23,12 @@ class TodoList {
                 btnCompleted, btnUncompleted, btnDeleteDone) {
 
         this.list = list;
+
+        this.todos = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+
+        this.todos.forEach((item) => {
+            Object.setPrototypeOf(item, TodoElement.prototype);
+        })
 
         form.addEventListener('submit', (event) => this.onSubmit(event));
         deleteBtn.addEventListener('click', _ => this.onDeleteAll());
@@ -49,6 +57,7 @@ class TodoList {
     onDeleteAll() {
         this.remove();
         list.innerHTML = '';
+        localStorage.clear();
     }
 
     deleteDone() {
@@ -82,6 +91,9 @@ class TodoList {
     addElement(text) {
         const todoElement = new TodoElement(text);
         this.todos.push(todoElement);
+        console.log(this.todos);
+        console.log(JSON.stringify(this.todos));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(this.todos));
     }
 
     create(todoElement) {
@@ -121,7 +133,6 @@ class TodoList {
             todoText.tabIndex = -1;
             todoText.setAttribute('contenteditable', true);
             todoText.focus();
-
         });
 
         todoText.addEventListener('keydown', (event) => {
@@ -135,11 +146,13 @@ class TodoList {
             todoText.removeAttribute('tabIndex');
             todoElement.setText(todoText.innerText);
             this.renderList();
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(this.todos));
         }
 
         btnDelete.addEventListener('click',_ => {
             this.deleteById(todoElement.getId());
             this.renderList();
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(this.todos));
         });
 
         todoText.addEventListener('click',_ => {
@@ -148,6 +161,7 @@ class TodoList {
             todoText.classList.toggle('active');
 
             todoElement.setDone(!isDone);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(this.todos));
         });
 
         return listItem;
